@@ -112,7 +112,7 @@ fn main() -> io::Result<()> {
 }
 
 async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
-    let limiter = RateLimiter::<InMemoryState, DefaultClock>::direct(
+    let limiter = RateLimiter::<(), InMemoryState, DefaultClock>::direct(
         Quota::per_second(NonZeroU32::new(10).unwrap()), // 10 attempts/sec
     );
 
