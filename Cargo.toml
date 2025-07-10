@@ -1,12 +1,39 @@
 [package]
-name = "my-project"
+name = "rdp_credential_tester"
 version = "0.1.0"
 edition = "2021"
+description = "Authorized RDP credential tester with Hydra-inspired features"
+license = "MIT"
+authors = ["Your Name <your.email@example.com>"]
 
 [dependencies]
-rayon = "1.10"
-ocl = "0.19.7"
-num_cpus = "1.16"
+# Core dependencies
+tokio = { version = "1.0", features = ["full"] }  # Async runtime
+rdp = { version = "0.1", features = ["async"] }    # RDP protocol implementation 
+winapi = { version = "0.3", features = ["winuser", "winsock2"] } # Windows API
+# For secure password handling
+secrecy = { version = "0.8", features = ["serde"] }
+# For rate limiting and timing
+ratelimit = "0.1"
+# For progress bars
+indicatif = "0.17"
+# For logging
+log = "0.4"
+env_logger = "0.9"
+# For networked operation
+libssh-rs = { version = "0.2", optional = true }  # SSH-based distributed testing
+# For config files
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# For command-line interface
+clap = { version = "3.0", features = ["derive"] }
+# Stats and reporting
+statrs = "0.13"
 
-# Uncomment below only if you're using an actual 'rdp' crate
-# rdp = "0.1.0"   # You need to replace with the actual crate version or remove if custom
+[features]
+default = []
+distributed = ["libssh-rs"]  # Enable distributed testing capabilities
+
+[dev-dependencies]
+rstest = "0.12"
+mockall = "0.10"
