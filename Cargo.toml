@@ -9,7 +9,7 @@ authors = ["Your Name <your.email@example.com>"]
 [dependencies]
 # Core dependencies
 tokio = { version = "1.0", features = ["full"] }  # Async runtime
-rdp = { version = "0.1", features = ["async"] }    # RDP protocol implementation 
+rdp = { version = "0.1.6" }    # RDP protocol implementation 
 winapi = { version = "0.3", features = ["winuser", "winsock2"] } # Windows API
 # For secure password handling
 secrecy = { version = "0.8", features = ["serde"] }
