@@ -5,7 +5,12 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
+
 use tokio::runtime::Runtime;
+use governor::{Quota, RateLimiter};
+use std::num::NonZeroU32;
+use governor::state::InMemoryState;
+use governor::clock::DefaultClock;
 
 // Configuration structure (Hydra-inspired)
 struct HydraConfig {
@@ -107,25 +112,17 @@ fn main() -> io::Result<()> {
 }
 
 async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
-    // Simulated attack - replace with real RDP client logic
+    let limiter = RateLimiter::<InMemoryState, DefaultClock>::direct(
+        Quota::per_second(NonZeroU32::new(10).unwrap()), // 10 attempts/sec
+    );
+
     for user in config.username_list {
         for pass in &config.password_list {
+            limiter.until_ready().await;
+
             stats.attempts.fetch_add(1, Ordering::Relaxed);
 
-            // Placeholder for actual RDP connection
-            /*
-            if let Ok(true) = rdp_connect(
-                &config.target_ip,
-                &user,
-                pass,
-                config.timeout_ms
-            ).await {
-                stats.successes.fetch_add(1, Ordering::Relaxed);
-                log_success(&format!("{}:{}@{}", user, pass, config.target_ip));
-            }
-            */
-
-            // Simulation: pretend "admin123" is a successful password
+            // Simulated success condition
             if pass == "admin123" {
                 stats.successes.fetch_add(1, Ordering::Relaxed);
                 println!("[SUCCESS] {}:{}@{}", user, pass, config.target_ip);
