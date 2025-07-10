@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{
     collections::HashSet,
     error::Error,
