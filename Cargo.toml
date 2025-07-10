@@ -14,7 +14,7 @@ winapi = { version = "0.3", features = ["winuser", "winsock2"] } # Windows API
 # For secure password handling
 secrecy = { version = "0.8", features = ["serde"] }
 # For rate limiting and timing
-governor = { version = "0.6", features = ["std", "future"] }
+governor = { version = "0.6", features = ["std", "futures"] }
 # For progress bars
 indicatif = "0.17"
 # For logging
