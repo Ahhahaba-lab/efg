@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 rayon = "1.10"
-ocl = "0.20"
+ocl = "0.19.7"
 num_cpus = "1.16"
 
 # Uncomment below only if you're using an actual 'rdp' crate
