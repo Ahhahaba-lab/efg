@@ -1,3 +1,4 @@
+
 use std::fs::File;
 use std::io::{self, BufRead, Write};
 use std::path::Path;
@@ -9,8 +10,6 @@ use std::time::{Duration, Instant};
 use tokio::runtime::Runtime;
 use governor::{Quota, RateLimiter};
 use std::num::NonZeroU32;
-use governor::state::InMemoryState;
-use governor::clock::DefaultClock;
 
 // Configuration structure (Hydra-inspired)
 struct HydraConfig {
@@ -112,8 +111,9 @@ fn main() -> io::Result<()> {
 }
 
 async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
-    let limiter = RateLimiter::<(), InMemoryState, DefaultClock>::direct(
-        Quota::per_second(NonZeroU32::new(10).unwrap()), // 10 attempts/sec
+    // Fixed: Use the simple direct() method without type parameters
+    let limiter = RateLimiter::direct(
+        Quota::per_second(NonZeroU32::new(10).unwrap()) // 10 attempts/sec
     );
 
     for user in config.username_list {
@@ -138,7 +138,7 @@ async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
 fn get_input(prompt: &str) -> String {
     print!("{}", prompt);
     io::stdout().flush().unwrap();
-    let mut input = String::new();
+    let mut input = String::new(); 
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
 }
