@@ -34,20 +34,23 @@ impl HydraStats {
     }
 
     fn print_progress(&self) {
-        let elapsed = self.start_time.elapsed().as_secs();
+        let elapsed = self.start_time.elapsed();
+        let elapsed_secs = elapsed.as_secs();
+        let elapsed_nanos = elapsed.as_nanos();
         let attempts = self.attempts.load(Ordering::Relaxed);
-        let rate = if elapsed > 0 {
-            attempts as f64 / elapsed as f64
+        let rate = if elapsed_secs > 0 {
+            attempts as f64 / elapsed_secs as f64
         } else {
             0.0
         };
-        
+
         println!(
-            "Progress: {} attempts ({} success) | {:.2} attemps/sec | Elapsed: {}s",
+            "Progress: {} attempts ({} success) | {:.2} attempts/sec | Elapsed: {}s ({} ns)",
             attempts,
             self.successes.load(Ordering::Relaxed),
             rate,
-            elapsed
+            elapsed_secs,
+            elapsed_nanos
         );
     }
 }
@@ -108,7 +111,7 @@ async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
     for user in config.username_list {
         for pass in &config.password_list {
             stats.attempts.fetch_add(1, Ordering::Relaxed);
-            
+
             // Placeholder for actual RDP connection
             /*
             if let Ok(true) = rdp_connect(
@@ -121,8 +124,8 @@ async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
                 log_success(&format!("{}:{}@{}", user, pass, config.target_ip));
             }
             */
-            
-            // Simulation finds "admin123"
+
+            // Simulation: pretend "admin123" is a successful password
             if pass == "admin123" {
                 stats.successes.fetch_add(1, Ordering::Relaxed);
                 println!("[SUCCESS] {}:{}@{}", user, pass, config.target_ip);
@@ -133,7 +136,8 @@ async fn run_attack(config: HydraConfig, stats: Arc<HydraStats>) {
     }
 }
 
-// Helper functions remain the same as previous examples
+// Helper functions
+
 fn get_input(prompt: &str) -> String {
     print!("{}", prompt);
     io::stdout().flush().unwrap();
@@ -142,7 +146,10 @@ fn get_input(prompt: &str) -> String {
     input.trim().to_string()
 }
 
-fn read_lines<P>(filename: P) -> io::Result<Vec<String>> where P: AsRef<Path> {
+fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file)
         .lines()
